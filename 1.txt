@@ -44,7 +44,7 @@ INSERT INTO Patients (Name, Age, Gender, AdmissionDate, DoctorID) VALUES
 -- Fetch Patient Details
 SELECT * FROM Patients;
 
--- List Patients Admitted on '2024-06-15'
+-- List Patients Admitted on a Specific Date ('2024-06-15')
 SELECT * 
 FROM Patients
 WHERE AdmissionDate = '2024-06-15';
@@ -58,7 +58,7 @@ SELECT Name, Age,
     END AS AgeGroup
 FROM Patients;
 
--- Update Patient Details (PatientID = 1)
+-- Update Patient Details (Change Name for PatientID = 1)
 UPDATE Patients
 SET Name = 'Alice Updated'
 WHERE PatientID = 1;
@@ -76,7 +76,7 @@ FROM Doctors d
 LEFT JOIN Patients p ON d.DoctorID = p.DoctorID
 GROUP BY d.Name;
 
--- Average Experience of Doctors
+-- Calculate Average Experience of Doctors
 SELECT AVG(Experience) AS AverageExperience
 FROM Doctors;
 
