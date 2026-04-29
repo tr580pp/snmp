@@ -86,7 +86,7 @@ curl -X POST http://localhost:5984/librarydb \
 -- Display all documents
 curl -X GET http://localhost:5984/librarydb/_all_docs?include_docs=true
 
--- Display all Fiction books
+-- Display all the books in the genre "Fiction"
 curl -X POST http://localhost:5984/librarydb/_find \
 -H "Content-Type: application/json" \
 -d '{
@@ -95,7 +95,7 @@ curl -X POST http://localhost:5984/librarydb/_find \
   }
 }'
 
--- Display books sorted by Title (alphabetical)
+-- Display all books sorted by their Title in alphabetical order
 curl -X POST http://localhost:5984/librarydb/_index \
 -H "Content-Type: application/json" \
 -d '{
@@ -130,7 +130,7 @@ curl -X POST http://localhost:5984/librarydb/_find \
   "limit": 3
 }'
 
--- List Author of "The Great Gatsby"
+-- List the Author of the book titled "The Great Gatsby"
 curl -X POST http://localhost:5984/librarydb/_find \
 -H "Content-Type: application/json" \
 -d '{
