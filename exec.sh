@@ -21,5 +21,3 @@ EOF
 else
   echo "qa() already exists in ~/.bashrc"
 fi
-
-echo "Run: source ~/.bashrc"
