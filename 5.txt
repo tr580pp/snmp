@@ -1,0 +1,106 @@
+docker run -d \
+--name neo4j-db \
+-p 7474:7474 \
+-p 7687:7687 \
+-e NEO4J_AUTH=neo4j/password123 \
+neo4j
+
+
+
+-- Create Nodes (Users + Movies)
+CREATE 
+(:User {UserID: 1, Username: 'John'}),
+(:User {UserID: 2, Username: 'Alice'}),
+(:User {UserID: 3, Username: 'Bob'}),
+(:User {UserID: 4, Username: 'Rahul'}),
+(:User {UserID: 5, Username: 'Sneha'}),
+
+(:Movie {MovieID: 101, Title: 'Inception'}),
+(:Movie {MovieID: 102, Title: 'The Matrix'}),
+(:Movie {MovieID: 103, Title: 'Interstellar'}),
+(:Movie {MovieID: 104, Title: 'Titanic'}),
+(:Movie {MovieID: 105, Title: 'Avatar'});
+
+-- Create Relationships (LIKES)
+MATCH (u:User {Username: 'John'}), (m:Movie {Title: 'Inception'})
+CREATE (u)-[:LIKES]->(m);
+
+MATCH (u:User {Username: 'John'}), (m:Movie {Title: 'The Matrix'})
+CREATE (u)-[:LIKES]->(m);
+
+MATCH (u:User {Username: 'Alice'}), (m:Movie {Title: 'Inception'})
+CREATE (u)-[:LIKES]->(m);
+
+MATCH (u:User {Username: 'Bob'}), (m:Movie {Title: 'The Matrix'})
+CREATE (u)-[:LIKES]->(m);
+
+MATCH (u:User {Username: 'Rahul'}), (m:Movie {Title: 'Inception'})
+CREATE (u)-[:LIKES]->(m);
+
+MATCH (u:User {Username: 'Sneha'}), (m:Movie {Title: 'Interstellar'})
+CREATE (u)-[:LIKES]->(m);
+
+MATCH (u:User {Username: 'Alice'}), (m:Movie {Title: 'The Matrix'})
+CREATE (u)-[:LIKES]->(m);
+
+-- Movies liked by "John"
+MATCH (:User {Username: 'John'})-[:LIKES]->(m:Movie)
+RETURN m;
+
+-- Users who like "Inception"
+MATCH (u:User)-[:LIKES]->(:Movie {Title: 'Inception'})
+RETURN u;
+
+-- Movies in ascending order by Title
+MATCH (m:Movie)
+RETURN m
+ORDER BY m.Title ASC;
+
+-- Users who like BOTH "The Matrix" and "Inception"
+MATCH (u:User)-[:LIKES]->(:Movie {Title: 'The Matrix'}),
+      (u)-[:LIKES]->(:Movie {Title: 'Inception'})
+RETURN u;
+
+-- Most liked movie
+MATCH (m:Movie)<-[:LIKES]-(u:User)
+WITH m, COUNT(u) AS likes
+ORDER BY likes DESC
+LIMIT 1
+RETURN m.Title, likes;
+
+-- Top 5 users who like the most movies
+MATCH (u:User)-[:LIKES]->(m:Movie)
+WITH u, COUNT(m) AS totalLikes
+ORDER BY totalLikes DESC
+LIMIT 5
+RETURN u.Username, totalLikes;
+
+-- Movies liked by others who share taste with John, but John hasn’t liked yet
+MATCH (u:User {Username: 'John'})-[:LIKES]->(m:Movie)<-[:LIKES]-(other:User),
+      (other)-[:LIKES]->(rec:Movie)
+WHERE NOT (u)-[:LIKES]->(rec)
+RETURN DISTINCT rec.Title;
+
+-- Users with Similar Taste (Common Likes)
+MATCH (u1:User {Username: 'John'})-[:LIKES]->(m:Movie)<-[:LIKES]-(u2:User)
+WHERE u1 <> u2
+RETURN u2.Username, COUNT(m) AS CommonLikes
+ORDER BY CommonLikes DESC;
+
+-- Movies Liked by Only One User
+MATCH (m:Movie)<-[:LIKES]-(u:User)
+WITH m, COUNT(u) AS likes
+WHERE likes = 1
+RETURN m.Title;
+
+-- Top 3 Most Popular Movies
+MATCH (m:Movie)<-[:LIKES]-(u:User)
+WITH m, COUNT(u) AS likes
+ORDER BY likes DESC
+LIMIT 3
+RETURN m.Title, likes;
+
+-- Number of Movies Each User Likes
+MATCH (u:User)-[:LIKES]->(m:Movie)
+RETURN u.Username, COUNT(m) AS TotalLikes
+ORDER BY TotalLikes DESC;

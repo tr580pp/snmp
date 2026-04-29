@@ -1,0 +1,79 @@
+docker run -d \
+--name redis-db \
+-p 6379:6379 \
+redis
+
+docker exec -it redis-db redis-cli
+
+
+
+-- Insert Products (Using Hashes)
+HSET product:101 Name "Laptop" Category "Electronics" Price 800
+HSET product:102 Name "Phone" Category "Electronics" Price 600
+HSET product:103 Name "Shoes" Category "Fashion" Price 1200
+HSET product:104 Name "Headphones" Category "Electronics" Price 900
+HSET product:105 Name "Watch" Category "Accessories" Price 700
+
+-- Maintain a Set for category indexing
+SADD category:Electronics 101 102 104
+SADD category:Fashion 103
+SADD category:Accessories 105
+
+-- Retrieve Specific Product by ProductID
+HGETALL product:101
+
+SMEMBERS category:Electronics
+
+HGETALL product:101
+HGETALL product:102
+HGETALL product:104
+
+-- List Products in Price Range (500 - 1000)
+ZADD price_index 800 101
+ZADD price_index 600 102
+ZADD price_index 1200 103
+ZADD price_index 900 104
+ZADD price_index 700 105
+
+ZRANGEBYSCORE price_index 500 1000
+
+HGETALL product:101
+HGETALL product:102
+HGETALL product:104
+HGETALL product:105
+
+-- Update Product Price
+HSET product:101 Price 850
+
+ZADD price_index 850 101
+
+-- Delete a Product
+DEL product:103
+
+SREM category:Fashion 103
+ZREM price_index 103
+
+-- Get Only Product Name
+HGET product:101 Name
+
+-- Get Multiple Fields of a Product
+HMGET product:101 Name Price
+
+-- Products in Multiple Categories (Union)
+SUNION category:Electronics category:Accessories
+
+-- Products Common in Two Categories (Intersection)
+SINTER category:Electronics category:Accessories
+
+-- Products in Electronics but NOT in Fashion
+SDIFF category:Electronics category:Fashion
+
+-- Top 3 Most Expensive Products
+ZREVRANGE price_index 0 2
+
+-- Cheapest Product
+ZRANGE price_index 0 0
+
+-- Increase Price (Numeric Update)
+HINCRBY product:101 Price 50
+

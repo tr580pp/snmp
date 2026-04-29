@@ -1,0 +1,104 @@
+docker run --name pg-container \
+-e POSTGRES_USER=admin \
+-e POSTGRES_PASSWORD=admin123 \
+-e POSTGRES_DB=hospital \
+-p 5432:5432 \
+-d postgres
+
+docker exec -it pg-container psql -U admin -d hospital
+
+
+
+-- Create Tables
+CREATE TABLE Doctors (
+    DoctorID SERIAL PRIMARY KEY,
+    Name VARCHAR(100),
+    Specialization VARCHAR(100),
+    Experience INT
+);
+
+CREATE TABLE Patients (
+    PatientID SERIAL PRIMARY KEY,
+    Name VARCHAR(100),
+    Age INT,
+    Gender VARCHAR(10),
+    AdmissionDate DATE,
+    DoctorID INT,
+    FOREIGN KEY (DoctorID) REFERENCES Doctors(DoctorID)
+);
+
+-- Insert Sample Data
+INSERT INTO Doctors (Name, Specialization, Experience) VALUES
+('Dr. Smith', 'Cardiology', 10),
+('Dr. John', 'Neurology', 8),
+('Dr. Emily', 'Orthopedics', 5),
+('Dr. Brown', 'Cardiology', 12);
+
+INSERT INTO Patients (Name, Age, Gender, AdmissionDate, DoctorID) VALUES
+('Alice', 25, 'Female', '2024-06-15', 1),
+('Bob', 45, 'Male', '2024-06-14', 2),
+('Charlie', 65, 'Male', '2024-06-15', 1),
+('Diana', 30, 'Female', '2024-06-16', 3),
+('Eve', 50, 'Female', '2024-06-15', 4);
+
+-- Fetch Patient Details
+SELECT * FROM Patients;
+
+-- List Patients Admitted on '2024-06-15'
+SELECT * 
+FROM Patients
+WHERE AdmissionDate = '2024-06-15';
+
+-- List Patients by Age Group
+SELECT Name, Age,
+    CASE
+        WHEN Age < 18 THEN 'Child'
+        WHEN Age BETWEEN 18 AND 60 THEN 'Adult'
+        ELSE 'Senior'
+    END AS AgeGroup
+FROM Patients;
+
+-- Update Patient Details (PatientID = 1)
+UPDATE Patients
+SET Name = 'Alice Updated'
+WHERE PatientID = 1;
+
+-- List Doctors by Specialization ('Cardiology')
+SELECT * 
+FROM Doctors
+WHERE Specialization = 'Cardiology';
+
+-- Count Patients per Doctor
+SELECT 
+    d.Name AS DoctorName,
+    COUNT(p.PatientID) AS PatientCount
+FROM Doctors d
+LEFT JOIN Patients p ON d.DoctorID = p.DoctorID
+GROUP BY d.Name;
+
+-- Average Experience of Doctors
+SELECT AVG(Experience) AS AverageExperience
+FROM Doctors;
+
+-- Find Doctors with More Than 1 Patient
+SELECT 
+    d.Name,
+    COUNT(p.PatientID) AS PatientCount
+FROM Doctors d
+JOIN Patients p ON d.DoctorID = p.DoctorID
+GROUP BY d.Name
+HAVING COUNT(p.PatientID) > 1;
+
+-- Oldest Patient in the Hospital
+SELECT *
+FROM Patients
+ORDER BY Age DESC
+LIMIT 1;
+
+-- Rank Doctors by Experience
+SELECT 
+    Name,
+    Specialization,
+    Experience,
+    RANK() OVER (ORDER BY Experience DESC) AS Rank
+FROM Doctors;

@@ -1,0 +1,204 @@
+docker run -d \
+--name couchdb-container \
+-e COUCHDB_USER=admin \
+-e COUCHDB_PASSWORD=admin123 \
+-p 5984:5984 \
+couchdb
+
+
+
+-- Create Database
+curl -X PUT http://localhost:5984/librarydb
+
+-- Insert Documents (Books)
+curl -X POST http://localhost:5984/librarydb \
+-H "Content-Type: application/json" \
+-d '{
+  "ISBN": "9780743273565",
+  "Title": "The Great Gatsby",
+  "Author": "F. Scott Fitzgerald",
+  "Genre": "Fiction",
+  "PublicationYear": 1925,
+  "CopiesAvailable": 5,
+  "Rating": 4.5
+}'
+
+curl -X POST http://localhost:5984/librarydb \
+-H "Content-Type: application/json" \
+-d '{
+  "ISBN": "9780140449136",
+  "Title": "The Odyssey",
+  "Author": "Homer",
+  "Genre": "Classic",
+  "PublicationYear": -800,
+  "CopiesAvailable": 3,
+  "Rating": 4.2
+}'
+
+curl -X POST http://localhost:5984/librarydb \
+-H "Content-Type: application/json" \
+-d '{
+  "ISBN": "9780061120084",
+  "Title": "To Kill a Mockingbird",
+  "Author": "Harper Lee",
+  "Genre": "Fiction",
+  "PublicationYear": 1960,
+  "CopiesAvailable": 4,
+  "Rating": 4.8
+}'
+
+curl -X POST http://localhost:5984/librarydb \
+-H "Content-Type: application/json" \
+-d '{
+  "ISBN": "9780307277671",
+  "Title": "The Road",
+  "Author": "Cormac McCarthy",
+  "Genre": "Fiction",
+  "PublicationYear": 2006,
+  "CopiesAvailable": 2,
+  "Rating": 4.0
+}'
+
+curl -X POST http://localhost:5984/librarydb \
+-H "Content-Type: application/json" \
+-d '{
+  "ISBN": "9780553380163",
+  "Title": "A Brief History of Time",
+  "Author": "Stephen Hawking",
+  "Genre": "Science",
+  "PublicationYear": 1988,
+  "CopiesAvailable": 6,
+  "Rating": 4.6
+}'
+
+curl -X POST http://localhost:5984/librarydb \
+-H "Content-Type: application/json" \
+-d '{
+  "ISBN": "9780385472579",
+  "Title": "Zen and the Art of Motorcycle Maintenance",
+  "Author": "Robert M. Pirsig",
+  "Genre": "Philosophy",
+  "PublicationYear": 1974,
+  "CopiesAvailable": 3,
+  "Rating": 4.1
+}'
+
+-- Display all documents
+curl -X GET http://localhost:5984/librarydb/_all_docs?include_docs=true
+
+-- Display all Fiction books
+curl -X POST http://localhost:5984/librarydb/_find \
+-H "Content-Type: application/json" \
+-d '{
+  "selector": {
+    "Genre": "Fiction"
+  }
+}'
+
+-- Display books sorted by Title (alphabetical)
+curl -X POST http://localhost:5984/librarydb/_index \
+-H "Content-Type: application/json" \
+-d '{
+  "index": {
+    "fields": ["Title"]
+  },
+  "name": "title-index",
+  "type": "json"
+}'
+
+curl -X POST http://localhost:5984/librarydb/_find \
+-H "Content-Type: application/json" \
+-d '{
+  "selector": {},
+  "sort": [{"Title": "asc"}]
+}'
+
+-- Display first 3 books
+curl -X POST http://localhost:5984/librarydb/_find \
+-H "Content-Type: application/json" \
+-d '{
+  "selector": {},
+  "limit": 3
+}'
+
+-- Display books 4, 5, and 6
+curl -X POST http://localhost:5984/librarydb/_find \
+-H "Content-Type: application/json" \
+-d '{
+  "selector": {},
+  "skip": 3,
+  "limit": 3
+}'
+
+-- List Author of "The Great Gatsby"
+curl -X POST http://localhost:5984/librarydb/_find \
+-H "Content-Type: application/json" \
+-d '{
+  "selector": {
+    "Title": "The Great Gatsby"
+  },
+  "fields": ["Author"]
+}'
+
+-- Books with Rating ≥ 4.5
+curl -X POST http://localhost:5984/librarydb/_find \
+-H "Content-Type: application/json" \
+-d '{
+  "selector": {
+    "Rating": {
+      "$gte": 4.5
+    }
+  }
+}'
+
+-- Logical OR (Fiction OR Rating > 4.7)
+curl -X POST http://localhost:5984/librarydb/_find \
+-H "Content-Type: application/json" \
+-d '{
+  "selector": {
+    "$or": [
+      {"Genre": "Fiction"},
+      {"Rating": {"$gt": 4.7}}
+    ]
+  }
+}'
+
+-- Create Index for Rating + Genre
+curl -X POST http://localhost:5984/librarydb/_index \
+-H "Content-Type: application/json" \
+-d '{
+  "index": {
+    "fields": ["Genre", "Rating"]
+  },
+  "name": "genre-rating-index",
+  "type": "json"
+}'
+
+-- Count Books per Genre
+curl -X PUT http://localhost:5984/librarydb/_design/genre_view \
+-H "Content-Type: application/json" \
+-d '{
+  "views": {
+    "count_by_genre": {
+      "map": "function(doc) { emit(doc.Genre, 1); }",
+      "reduce": "_count"
+    }
+  }
+}'
+
+curl -X GET http://localhost:5984/librarydb/_design/genre_view/_view/count_by_genre?group=true
+
+-- Average Rating per Genre
+curl -X PUT http://localhost:5984/librarydb/_design/rating_view \
+-H "Content-Type: application/json" \
+-d '{
+  "views": {
+    "avg_rating": {
+      "map": "function(doc) { emit(doc.Genre, doc.Rating); }",
+      "reduce": "_stats"
+    }
+  }
+}'
+
+curl -X GET http://localhost:5984/librarydb/_design/rating_view/_view/avg_rating?group=true
+

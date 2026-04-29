@@ -1,0 +1,195 @@
+docker run -d \
+--name couchdb-container \
+-e COUCHDB_USER=admin \
+-e COUCHDB_PASSWORD=admin123 \
+-p 5984:5984 \
+couchdb
+
+
+
+-- Create Database
+curl -X PUT http://localhost:5984/studentdb
+
+-- Insert Documents (Students)
+curl -X POST http://localhost:5984/studentdb \
+-H "Content-Type: application/json" \
+-d '{
+  "SRN": "S001",
+  "Sname": "Rahul",
+  "Degree": "BCA",
+  "Sem": 5,
+  "CGPA": 7.2
+}'
+
+curl -X POST http://localhost:5984/studentdb \
+-H "Content-Type: application/json" \
+-d '{
+  "SRN": "S002",
+  "Sname": "Anita",
+  "Degree": "BSc",
+  "Sem": 3,
+  "CGPA": 8.1
+}'
+
+curl -X POST http://localhost:5984/studentdb \
+-H "Content-Type: application/json" \
+-d '{
+  "SRN": "S003",
+  "Sname": "Kiran",
+  "Degree": "BCA",
+  "Sem": 4,
+  "CGPA": 6.8
+}'
+
+curl -X POST http://localhost:5984/studentdb \
+-H "Content-Type: application/json" \
+-d '{
+  "SRN": "S004",
+  "Sname": "Meena",
+  "Degree": "BCom",
+  "Sem": 2,
+  "CGPA": 5.9
+}'
+
+curl -X POST http://localhost:5984/studentdb \
+-H "Content-Type: application/json" \
+-d '{
+  "SRN": "S005",
+  "Sname": "Arjun",
+  "Degree": "BCA",
+  "Sem": 6,
+  "CGPA": 7.0
+}'
+
+curl -X POST http://localhost:5984/studentdb \
+-H "Content-Type: application/json" \
+-d '{
+  "SRN": "S006",
+  "Sname": "Sneha",
+  "Degree": "BCA",
+  "Sem": 1,
+  "CGPA": 6.5
+}'
+
+curl -X POST http://localhost:5984/studentdb \
+-H "Content-Type: application/json" \
+-d '{
+  "SRN": "S007",
+  "Sname": "Vikram",
+  "Degree": "BSc",
+  "Sem": 2,
+  "CGPA": 7.8
+}'
+
+-- Display all documents
+curl -X GET http://localhost:5984/studentdb/_all_docs?include_docs=true
+
+-- Display all students in BCA
+curl -X POST http://localhost:5984/studentdb/_find \
+-H "Content-Type: application/json" \
+-d '{
+  "selector": {
+    "Degree": "BCA"
+  }
+}'
+
+-- Display all students in ascending order (by CGPA)
+curl -X POST http://localhost:5984/studentdb/_find \
+-H "Content-Type: application/json" \
+-d '{
+  "selector": {},
+  "sort": [{"CGPA": "asc"}]
+}'
+
+-- Display first 5 students
+curl -X POST http://localhost:5984/studentdb/_find \
+-H "Content-Type: application/json" \
+-d '{
+  "selector": {},
+  "limit": 5
+}'
+
+-- Display students 5,6,7
+curl -X POST http://localhost:5984/studentdb/_find \
+-H "Content-Type: application/json" \
+-d '{
+  "selector": {},
+  "skip": 4,
+  "limit": 3
+}'
+
+-- List degree of student "Rahul"
+curl -X POST http://localhost:5984/studentdb/_find \
+-H "Content-Type: application/json" \
+-d '{
+  "selector": {
+    "Sname": "Rahul"
+  },
+  "fields": ["Degree"]
+}'
+
+-- Students 5,6,7 in descending order of CGPA
+curl -X POST http://localhost:5984/studentdb/_find \
+-H "Content-Type: application/json" \
+-d '{
+  "selector": {},
+  "sort": [{"CGPA": "desc"}],
+  "skip": 4,
+  "limit": 3
+}'
+
+-- BCA students with CGPA > 6 and < 7.5
+curl -X POST http://localhost:5984/studentdb/_find \
+-H "Content-Type: application/json" \
+-d '{
+  "selector": {
+    "Degree": "BCA",
+    "CGPA": {
+      "$gt": 6,
+      "$lt": 7.5
+    }
+  }
+}'
+
+-- Update Student Details
+curl -X PUT http://localhost:5984/studentdb/<DOC_ID> \
+-H "Content-Type: application/json" \
+-d '{
+  "_id": "<DOC_ID>",
+  "_rev": "<REV_ID>",
+  "SRN": "S001",
+  "Sname": "Rahul Updated",
+  "Degree": "BCA",
+  "Sem": 6,
+  "CGPA": 7.5
+}'
+
+-- Delete a Student
+curl -X DELETE http://localhost:5984/studentdb/<DOC_ID>?rev=<REV_ID>
+
+-- MapReduce View
+curl -X PUT http://localhost:5984/studentdb/_design/student_view \
+-H "Content-Type: application/json" \
+-d '{
+  "views": {
+    "by_degree": {
+      "map": "function(doc) { emit(doc.Degree, doc.CGPA); }"
+    }
+  }
+}'
+
+curl -X GET http://localhost:5984/studentdb/_design/student_view/_view/by_degree
+
+-- Count Students per Degree
+curl -X PUT http://localhost:5984/studentdb/_design/count_view \
+-H "Content-Type: application/json" \
+-d '{
+  "views": {
+    "count_by_degree": {
+      "map": "function(doc) { emit(doc.Degree, 1); }",
+      "reduce": "_count"
+    }
+  }
+}'
+
+curl -X GET http://localhost:5984/studentdb/_design/count_view/_view/count_by_degree?group=true

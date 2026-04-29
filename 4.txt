@@ -1,0 +1,93 @@
+docker run -d \
+--name neo4j-db \
+-p 7474:7474 \
+-p 7687:7687 \
+-e NEO4J_AUTH=neo4j/password123 \
+neo4j
+
+
+
+-- Create Nodes (Users)
+CREATE (:User {UserID: 1, Username: 'Alice'}),
+       (:User {UserID: 2, Username: 'Bob'}),
+       (:User {UserID: 3, Username: 'Jane'}),
+       (:User {UserID: 4, Username: 'Rahul'}),
+       (:User {UserID: 5, Username: 'Sneha'}),
+       (:User {UserID: 6, Username: 'Kiran'}),
+       (:User {UserID: 7, Username: 'Meena'});
+
+-- Create Relationships (FOLLOWS)
+MATCH (a:User {Username: 'Jane'}), (b:User {Username: 'Alice'})
+CREATE (a)-[:FOLLOWS]->(b);
+
+MATCH (a:User {Username: 'Jane'}), (b:User {Username: 'Bob'})
+CREATE (a)-[:FOLLOWS]->(b);
+
+MATCH (a:User {Username: 'Rahul'}), (b:User {Username: 'Alice'})
+CREATE (a)-[:FOLLOWS]->(b);
+
+MATCH (a:User {Username: 'Sneha'}), (b:User {Username: 'Bob'})
+CREATE (a)-[:FOLLOWS]->(b);
+
+MATCH (a:User {Username: 'Kiran'}), (b:User {Username: 'Alice'})
+CREATE (a)-[:FOLLOWS]->(b);
+
+MATCH (a:User {Username: 'Kiran'}), (b:User {Username: 'Bob'})
+CREATE (a)-[:FOLLOWS]->(b);
+
+-- Display all users
+MATCH (u:User)
+RETURN u;
+
+-- Users followed by "Jane"
+MATCH (:User {Username: 'Jane'})-[:FOLLOWS]->(u:User)
+RETURN u;
+
+-- Users in ascending order by Username
+MATCH (u:User)
+RETURN u
+ORDER BY u.Username ASC;
+
+-- Users who follow BOTH "Alice" and "Bob"
+MATCH (u:User)-[:FOLLOWS]->(:User {Username: 'Alice'}),
+      (u)-[:FOLLOWS]->(:User {Username: 'Bob'})
+RETURN u;
+
+-- Users with the most followers
+MATCH (u:User)<-[:FOLLOWS]-(f:User)
+WITH u, COUNT(f) AS followers
+ORDER BY followers DESC
+LIMIT 1
+RETURN u, followers;
+
+-- Display first 5 users
+MATCH (u:User)
+RETURN u
+LIMIT 5;
+
+-- Users followed by both Alice and Bob
+MATCH (:User {Username: 'Alice'})<-[:FOLLOWS]-(u:User)-[:FOLLOWS]->(:User {Username: 'Bob'})
+RETURN u;
+
+-- Users who follow each other
+MATCH (u1:User)-[:FOLLOWS]->(u2:User),
+      (u2)-[:FOLLOWS]->(u1)
+RETURN u1, u2;
+
+-- Number of Followers for Each User
+MATCH (u:User)<-[:FOLLOWS]-(f:User)
+RETURN u.Username, COUNT(f) AS Followers
+ORDER BY Followers DESC;
+
+-- Number of People Each User Follows
+MATCH (u:User)-[:FOLLOWS]->(f:User)
+RETURN u.Username, COUNT(f) AS Following
+ORDER BY Following DESC;
+
+-- Count Total Users
+MATCH (u:User)
+RETURN COUNT(u) AS TotalUsers;
+
+-- Delete a Relationship
+MATCH (:User {Username: 'Jane'})-[r:FOLLOWS]->(:User {Username: 'Bob'})
+DELETE r;

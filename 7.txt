@@ -1,0 +1,60 @@
+-- Insert Employee Details
+HSET employee:101 Name "John" Department "HR" Position "Manager" Salary 60000
+HSET employee:102 Name "Alice" Department "IT" Position "Developer" Salary 70000
+HSET employee:103 Name "Bob" Department "HR" Position "Executive" Salary 45000
+HSET employee:104 Name "Rahul" Department "Finance" Position "Analyst" Salary 55000
+HSET employee:105 Name "Sneha" Department "HR" Position "Assistant" Salary 52000
+
+-- Department index (Set)
+SADD department:HR 101 103 105
+SADD department:IT 102
+SADD department:Finance 104
+
+-- Salary index (Sorted Set)
+ZADD salary_index 60000 101
+ZADD salary_index 70000 102
+ZADD salary_index 45000 103
+ZADD salary_index 55000 104
+ZADD salary_index 52000 105
+
+-- Employees in Department "HR"
+SMEMBERS department:HR
+
+HGETALL employee:101
+HGETALL employee:103
+HGETALL employee:105
+
+-- Employees with Salary > 50,000
+ZRANGEBYSCORE salary_index 50000 +inf
+
+HGETALL employee:101
+HGETALL employee:102
+HGETALL employee:104
+HGETALL employee:105
+
+-- Update Employee Position
+HSET employee:101 Position "Senior Manager"
+
+-- Get Only Employee Name
+HGET employee:101 Name
+
+-- Get Multiple Fields (Name + Salary)
+HMGET employee:101 Name Salary
+
+-- Employees in Multiple Departments (Union)
+SUNION department:HR department:IT
+
+-- Employees Common in Two Departments
+SINTER department:HR department:Finance
+
+-- Employees in HR but NOT in IT
+SDIFF department:HR department:IT
+
+-- Top 3 Highest Paid Employees
+ZREVRANGE salary_index 0 2
+
+-- Increment Salary
+HINCRBY employee:101 Salary 5000
+
+ZADD salary_index 65000 101
+
