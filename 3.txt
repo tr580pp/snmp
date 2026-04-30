@@ -83,7 +83,7 @@ curl -X POST http://admin:admin123@localhost:5984/librarydb \
   "Rating": 4.1
 }'
 
--- Display all documents
+-- Display all the documents in the library database
 curl -X GET http://admin:admin123@localhost:5984/librarydb/_all_docs?include_docs=true
 
 -- Display all the books in the genre "Fiction"
@@ -113,7 +113,7 @@ curl -X POST http://admin:admin123@localhost:5984/librarydb/_find \
   "sort": [{"Title": "asc"}]
 }'
 
--- Display first 3 books
+-- Display the first 3 books
 curl -X POST http://admin:admin123@localhost:5984/librarydb/_find \
 -H "Content-Type: application/json" \
 -d '{
