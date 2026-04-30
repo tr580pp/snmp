@@ -8,10 +8,10 @@ couchdb
 
 
 -- Create Database
-curl -X PUT http://localhost:5984/studentdb
+curl -X PUT http://admin:admin123@localhost:5984/studentdb
 
 -- Insert Documents (Students)
-curl -X POST http://localhost:5984/studentdb \
+curl -X POST http://admin:admin123@localhost:5984/studentdb \
 -H "Content-Type: application/json" \
 -d '{
   "SRN": "S001",
@@ -21,7 +21,7 @@ curl -X POST http://localhost:5984/studentdb \
   "CGPA": 7.2
 }'
 
-curl -X POST http://localhost:5984/studentdb \
+curl -X POST http://admin:admin123@localhost:5984/studentdb \
 -H "Content-Type: application/json" \
 -d '{
   "SRN": "S002",
@@ -31,7 +31,7 @@ curl -X POST http://localhost:5984/studentdb \
   "CGPA": 8.1
 }'
 
-curl -X POST http://localhost:5984/studentdb \
+curl -X POST http://admin:admin123@localhost:5984/studentdb \
 -H "Content-Type: application/json" \
 -d '{
   "SRN": "S003",
@@ -41,7 +41,7 @@ curl -X POST http://localhost:5984/studentdb \
   "CGPA": 6.8
 }'
 
-curl -X POST http://localhost:5984/studentdb \
+curl -X POST http://admin:admin123@localhost:5984/studentdb \
 -H "Content-Type: application/json" \
 -d '{
   "SRN": "S004",
@@ -51,7 +51,7 @@ curl -X POST http://localhost:5984/studentdb \
   "CGPA": 5.9
 }'
 
-curl -X POST http://localhost:5984/studentdb \
+curl -X POST http://admin:admin123@localhost:5984/studentdb \
 -H "Content-Type: application/json" \
 -d '{
   "SRN": "S005",
@@ -61,7 +61,7 @@ curl -X POST http://localhost:5984/studentdb \
   "CGPA": 7.0
 }'
 
-curl -X POST http://localhost:5984/studentdb \
+curl -X POST http://admin:admin123@localhost:5984/studentdb \
 -H "Content-Type: application/json" \
 -d '{
   "SRN": "S006",
@@ -71,7 +71,7 @@ curl -X POST http://localhost:5984/studentdb \
   "CGPA": 6.5
 }'
 
-curl -X POST http://localhost:5984/studentdb \
+curl -X POST http://admin:admin123@localhost:5984/studentdb \
 -H "Content-Type: application/json" \
 -d '{
   "SRN": "S007",
@@ -82,10 +82,10 @@ curl -X POST http://localhost:5984/studentdb \
 }'
 
 -- Display all documents
-curl -X GET http://localhost:5984/studentdb/_all_docs?include_docs=true
+curl -X GET http://admin:admin123@localhost:5984/studentdb/_all_docs?include_docs=true
 
 -- Display all students in BCA
-curl -X POST http://localhost:5984/studentdb/_find \
+curl -X POST http://admin:admin123@localhost:5984/studentdb/_find \
 -H "Content-Type: application/json" \
 -d '{
   "selector": {
@@ -94,7 +94,7 @@ curl -X POST http://localhost:5984/studentdb/_find \
 }'
 
 -- Display all students in ascending order (by CGPA)
-curl -X POST http://localhost:5984/studentdb/_find \
+curl -X POST http://admin:admin123@localhost:5984/studentdb/_find \
 -H "Content-Type: application/json" \
 -d '{
   "selector": {},
@@ -102,7 +102,7 @@ curl -X POST http://localhost:5984/studentdb/_find \
 }'
 
 -- Display first 5 students
-curl -X POST http://localhost:5984/studentdb/_find \
+curl -X POST http://admin:admin123@localhost:5984/studentdb/_find \
 -H "Content-Type: application/json" \
 -d '{
   "selector": {},
@@ -110,7 +110,7 @@ curl -X POST http://localhost:5984/studentdb/_find \
 }'
 
 -- Display students 5,6,7
-curl -X POST http://localhost:5984/studentdb/_find \
+curl -X POST http://admin:admin123@localhost:5984/studentdb/_find \
 -H "Content-Type: application/json" \
 -d '{
   "selector": {},
@@ -119,7 +119,7 @@ curl -X POST http://localhost:5984/studentdb/_find \
 }'
 
 -- List degree of student "Rahul"
-curl -X POST http://localhost:5984/studentdb/_find \
+curl -X POST http://admin:admin123@localhost:5984/studentdb/_find \
 -H "Content-Type: application/json" \
 -d '{
   "selector": {
@@ -129,7 +129,7 @@ curl -X POST http://localhost:5984/studentdb/_find \
 }'
 
 -- Display students details of 5,6,7 in descending order of percentage
-curl -X POST http://localhost:5984/studentdb/_find \
+curl -X POST http://admin:admin123@localhost:5984/studentdb/_find \
 -H "Content-Type: application/json" \
 -d '{
   "selector": {},
@@ -139,7 +139,7 @@ curl -X POST http://localhost:5984/studentdb/_find \
 }'
 
 -- Display all the BCA students with CGPA greater than 6, but less than 7.5
-curl -X POST http://localhost:5984/studentdb/_find \
+curl -X POST http://admin:admin123@localhost:5984/studentdb/_find \
 -H "Content-Type: application/json" \
 -d '{
   "selector": {
@@ -152,7 +152,7 @@ curl -X POST http://localhost:5984/studentdb/_find \
 }'
 
 -- Update Student Details
-curl -X PUT http://localhost:5984/studentdb/<DOC_ID> \
+curl -X PUT http://admin:admin123@localhost:5984/studentdb/<DOC_ID> \
 -H "Content-Type: application/json" \
 -d '{
   "_id": "<DOC_ID>",
@@ -165,10 +165,10 @@ curl -X PUT http://localhost:5984/studentdb/<DOC_ID> \
 }'
 
 -- Delete a Student
-curl -X DELETE http://localhost:5984/studentdb/<DOC_ID>?rev=<REV_ID>
+curl -X DELETE http://admin:admin123@localhost:5984/studentdb/<DOC_ID>?rev=<REV_ID>
 
 -- MapReduce View
-curl -X PUT http://localhost:5984/studentdb/_design/student_view \
+curl -X PUT http://admin:admin123@localhost:5984/studentdb/_design/student_view \
 -H "Content-Type: application/json" \
 -d '{
   "views": {
@@ -178,10 +178,10 @@ curl -X PUT http://localhost:5984/studentdb/_design/student_view \
   }
 }'
 
-curl -X GET http://localhost:5984/studentdb/_design/student_view/_view/by_degree
+curl -X GET http://admin:admin123@localhost:5984/studentdb/_design/student_view/_view/by_degree
 
 -- Count Students per Degree
-curl -X PUT http://localhost:5984/studentdb/_design/count_view \
+curl -X PUT http://admin:admin123@localhost:5984/studentdb/_design/count_view \
 -H "Content-Type: application/json" \
 -d '{
   "views": {
@@ -192,4 +192,4 @@ curl -X PUT http://localhost:5984/studentdb/_design/count_view \
   }
 }'
 
-curl -X GET http://localhost:5984/studentdb/_design/count_view/_view/count_by_degree?group=true
+curl -X GET http://admin:admin123@localhost:5984/studentdb/_design/count_view/_view/count_by_degree?group=true
