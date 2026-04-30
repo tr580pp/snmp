@@ -94,6 +94,16 @@ curl -X POST http://admin:admin123@localhost:5984/studentdb/_find \
 }'
 
 -- Display all students in ascending order (by CGPA)
+curl -X POST http://admin:admin123@localhost:5984/studentdb/_index \
+-H "Content-Type: application/json" \
+-d '{
+  "index": {
+    "fields": ["CGPA"]
+  },
+  "name": "cgpa-index",
+  "type": "json"
+}'
+
 curl -X POST http://admin:admin123@localhost:5984/studentdb/_find \
 -H "Content-Type: application/json" \
 -d '{
