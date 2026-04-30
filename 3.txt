@@ -8,10 +8,10 @@ couchdb
 
 
 -- Create Database
-curl -X PUT http://localhost:5984/librarydb
+curl -X PUT http://admin:admin123@localhost:5984/librarydb
 
 -- Insert Documents (Books)
-curl -X POST http://localhost:5984/librarydb \
+curl -X POST http://admin:admin123@localhost:5984/librarydb \
 -H "Content-Type: application/json" \
 -d '{
   "ISBN": "9780743273565",
@@ -23,7 +23,7 @@ curl -X POST http://localhost:5984/librarydb \
   "Rating": 4.5
 }'
 
-curl -X POST http://localhost:5984/librarydb \
+curl -X POST http://admin:admin123@localhost:5984/librarydb \
 -H "Content-Type: application/json" \
 -d '{
   "ISBN": "9780140449136",
@@ -35,7 +35,7 @@ curl -X POST http://localhost:5984/librarydb \
   "Rating": 4.2
 }'
 
-curl -X POST http://localhost:5984/librarydb \
+curl -X POST http://admin:admin123@localhost:5984/librarydb \
 -H "Content-Type: application/json" \
 -d '{
   "ISBN": "9780061120084",
@@ -47,7 +47,7 @@ curl -X POST http://localhost:5984/librarydb \
   "Rating": 4.8
 }'
 
-curl -X POST http://localhost:5984/librarydb \
+curl -X POST http://admin:admin123@localhost:5984/librarydb \
 -H "Content-Type: application/json" \
 -d '{
   "ISBN": "9780307277671",
@@ -59,7 +59,7 @@ curl -X POST http://localhost:5984/librarydb \
   "Rating": 4.0
 }'
 
-curl -X POST http://localhost:5984/librarydb \
+curl -X POST http://admin:admin123@localhost:5984/librarydb \
 -H "Content-Type: application/json" \
 -d '{
   "ISBN": "9780553380163",
@@ -71,7 +71,7 @@ curl -X POST http://localhost:5984/librarydb \
   "Rating": 4.6
 }'
 
-curl -X POST http://localhost:5984/librarydb \
+curl -X POST http://admin:admin123@localhost:5984/librarydb \
 -H "Content-Type: application/json" \
 -d '{
   "ISBN": "9780385472579",
@@ -84,10 +84,10 @@ curl -X POST http://localhost:5984/librarydb \
 }'
 
 -- Display all documents
-curl -X GET http://localhost:5984/librarydb/_all_docs?include_docs=true
+curl -X GET http://admin:admin123@localhost:5984/librarydb/_all_docs?include_docs=true
 
 -- Display all the books in the genre "Fiction"
-curl -X POST http://localhost:5984/librarydb/_find \
+curl -X POST http://admin:admin123@localhost:5984/librarydb/_find \
 -H "Content-Type: application/json" \
 -d '{
   "selector": {
@@ -96,7 +96,7 @@ curl -X POST http://localhost:5984/librarydb/_find \
 }'
 
 -- Display all books sorted by their Title in alphabetical order
-curl -X POST http://localhost:5984/librarydb/_index \
+curl -X POST http://admin:admin123@localhost:5984/librarydb/_index \
 -H "Content-Type: application/json" \
 -d '{
   "index": {
@@ -106,7 +106,7 @@ curl -X POST http://localhost:5984/librarydb/_index \
   "type": "json"
 }'
 
-curl -X POST http://localhost:5984/librarydb/_find \
+curl -X POST http://admin:admin123@localhost:5984/librarydb/_find \
 -H "Content-Type: application/json" \
 -d '{
   "selector": {},
@@ -114,7 +114,7 @@ curl -X POST http://localhost:5984/librarydb/_find \
 }'
 
 -- Display first 3 books
-curl -X POST http://localhost:5984/librarydb/_find \
+curl -X POST http://admin:admin123@localhost:5984/librarydb/_find \
 -H "Content-Type: application/json" \
 -d '{
   "selector": {},
@@ -122,7 +122,7 @@ curl -X POST http://localhost:5984/librarydb/_find \
 }'
 
 -- Display books 4, 5, and 6
-curl -X POST http://localhost:5984/librarydb/_find \
+curl -X POST http://admin:admin123@localhost:5984/librarydb/_find \
 -H "Content-Type: application/json" \
 -d '{
   "selector": {},
@@ -131,7 +131,7 @@ curl -X POST http://localhost:5984/librarydb/_find \
 }'
 
 -- List the Author of the book titled "The Great Gatsby"
-curl -X POST http://localhost:5984/librarydb/_find \
+curl -X POST http://admin:admin123@localhost:5984/librarydb/_find \
 -H "Content-Type: application/json" \
 -d '{
   "selector": {
@@ -141,7 +141,7 @@ curl -X POST http://localhost:5984/librarydb/_find \
 }'
 
 -- Books with Rating ≥ 4.5
-curl -X POST http://localhost:5984/librarydb/_find \
+curl -X POST http://admin:admin123@localhost:5984/librarydb/_find \
 -H "Content-Type: application/json" \
 -d '{
   "selector": {
@@ -152,7 +152,7 @@ curl -X POST http://localhost:5984/librarydb/_find \
 }'
 
 -- Logical OR (Fiction OR Rating > 4.7)
-curl -X POST http://localhost:5984/librarydb/_find \
+curl -X POST http://admin:admin123@localhost:5984/librarydb/_find \
 -H "Content-Type: application/json" \
 -d '{
   "selector": {
@@ -164,7 +164,7 @@ curl -X POST http://localhost:5984/librarydb/_find \
 }'
 
 -- Create Index for Rating + Genre
-curl -X POST http://localhost:5984/librarydb/_index \
+curl -X POST http://admin:admin123@localhost:5984/librarydb/_index \
 -H "Content-Type: application/json" \
 -d '{
   "index": {
@@ -175,7 +175,7 @@ curl -X POST http://localhost:5984/librarydb/_index \
 }'
 
 -- Count Books per Genre
-curl -X PUT http://localhost:5984/librarydb/_design/genre_view \
+curl -X PUT http://admin:admin123@localhost:5984/librarydb/_design/genre_view \
 -H "Content-Type: application/json" \
 -d '{
   "views": {
@@ -186,10 +186,10 @@ curl -X PUT http://localhost:5984/librarydb/_design/genre_view \
   }
 }'
 
-curl -X GET http://localhost:5984/librarydb/_design/genre_view/_view/count_by_genre?group=true
+curl -X GET http://admin:admin123@localhost:5984/librarydb/_design/genre_view/_view/count_by_genre?group=true
 
 -- Average Rating per Genre
-curl -X PUT http://localhost:5984/librarydb/_design/rating_view \
+curl -X PUT http://admin:admin123@localhost:5984/librarydb/_design/rating_view \
 -H "Content-Type: application/json" \
 -d '{
   "views": {
@@ -200,5 +200,5 @@ curl -X PUT http://localhost:5984/librarydb/_design/rating_view \
   }
 }'
 
-curl -X GET http://localhost:5984/librarydb/_design/rating_view/_view/avg_rating?group=true
+curl -X GET http://admin:admin123@localhost:5984/librarydb/_design/rating_view/_view/avg_rating?group=true
 
