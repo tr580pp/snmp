@@ -1,0 +1,133 @@
+LAB 2: VERSION CONTROL USING GIT AND GITHUB
+
+AIM:
+To learn Git repository initialization, commits, branching, merging, and GitHub integration.
+
+STEP 1: Create Project Directory
+
+Commands:
+cd Documents
+mkdir newproject
+cd newproject
+
+STEP 2: Create Python File
+
+Command:
+nano hello.py
+
+Code:
+print("Hello World")
+
+STEP 3: Verify File
+
+Command:
+cat hello.py
+
+STEP 4: Initialize Git Repository
+
+Command:
+git init
+
+STEP 5: View Hidden Files
+
+Command:
+ls -a
+
+Expected:
+.git directory appears.
+
+STEP 6: Check Git Status
+
+Command:
+git status
+
+STEP 7: Stage File
+
+Command:
+git add hello.py
+
+STEP 8: Commit File
+
+Command:
+git commit -m "First commit"
+
+STEP 9: Modify hello.py
+
+Command:
+nano hello.py
+
+Updated Code:
+print("Hello World")
+print("Second Line")
+
+STEP 10: View Changes
+
+Command:
+git diff
+
+STEP 11: Stage and Commit Again
+
+Commands:
+git add hello.py
+git commit -m "Second Commit"
+
+STEP 12: View Commit History
+
+Command:
+git log
+
+STEP 13: Checkout Old Commit
+
+Command:
+git checkout <commit-id>
+
+Example:
+git checkout 6947af2
+
+STEP 14: Return to Main Branch
+
+Command:
+git checkout master
+
+STEP 15: Create Feature Branch
+
+Commands:
+git branch add-feature
+git checkout add-feature
+
+STEP 16: Modify File Again
+
+Command:
+nano hello.py
+
+Add:
+print("Feature Added")
+
+STEP 17: Commit Feature
+
+Commands:
+git add hello.py
+git commit -m "Third Commit"
+
+STEP 18: Merge Feature Branch
+
+Commands:
+git checkout master
+git merge add-feature
+
+STEP 19: Add GitHub Remote
+
+Command:
+git remote add origin https://github.com/USERNAME/REPO.git
+
+Verify:
+git remote -v
+
+STEP 20: Push to GitHub
+
+Command:
+git push origin master
+
+If prompted:
+Username → GitHub Username
+Password → Personal Access Token (PAT)

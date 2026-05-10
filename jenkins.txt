@@ -1,0 +1,727 @@
+========================================================
+LAB 4: JENKINS BASICS – COMPLETE STEP BY STEP
+=============================================
+
+AIM:
+To install Jenkins, create jobs, configure build triggers, and execute sequential pipelines.
+
+========================================================
+PART 1: INSTALL JENKINS
+=======================
+
+---
+
+## STEP 1: Verify Java Installation
+
+Command:
+java --version
+
+If Java is not installed:
+
+Commands:
+sudo apt update
+sudo apt install openjdk-17-jdk
+
+Verify again:
+java --version
+
+---
+
+## STEP 2: Add Jenkins Repository Key
+
+Command:
+sudo wget -O /etc/apt/keyrings/jenkins-keyring.asc 
+[https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key](https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key)
+
+---
+
+## STEP 3: Add Jenkins Repository
+
+Command:
+echo "deb [signed-by=/etc/apt/keyrings/jenkins-keyring.asc]" 
+[https://pkg.jenkins.io/debian-stable](https://pkg.jenkins.io/debian-stable) binary/ | 
+sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null
+
+---
+
+## STEP 4: Update Packages
+
+Command:
+sudo apt update
+
+---
+
+## STEP 5: Install Jenkins
+
+Command:
+sudo apt install jenkins
+
+---
+
+## STEP 6: Enable and Start Jenkins
+
+Commands:
+sudo systemctl enable jenkins
+sudo systemctl start jenkins
+
+---
+
+## STEP 7: Verify Jenkins Service
+
+Command:
+sudo systemctl status jenkins
+
+Expected:
+active (running)
+
+---
+
+## STEP 8: Get Initial Admin Password
+
+Command:
+sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+
+Copy the password.
+
+========================================================
+PART 2: OPEN JENKINS WEB UI
+===========================
+
+---
+
+## STEP 9: Open Browser
+
+Open:
+[http://localhost:8080](http://localhost:8080)
+
+---
+
+## STEP 10: Unlock Jenkins
+
+Paste the password obtained earlier.
+
+Click:
+Continue
+
+---
+
+## STEP 11: Install Suggested Plugins
+
+Click:
+Install Suggested Plugins
+
+Wait until installation completes.
+
+---
+
+## STEP 12: Create Admin User
+
+Fill:
+Username
+Password
+Full Name
+Email
+
+Click:
+Save and Continue
+
+========================================================
+PART 3: CREATE JENKINS JOBS
+===========================
+
+---
+
+## STEP 13: Create Job1
+
+1. Click:
+   New Item
+
+2. Enter:
+   Job1
+
+3. Select:
+   Freestyle Project
+
+4. Click:
+   OK
+
+---
+
+## STEP 14: Add Build Step
+
+Inside Job1:
+
+1. Scroll to:
+   Build Steps
+
+2. Click:
+   Add Build Step
+
+3. Select:
+   Execute Shell
+
+---
+
+## STEP 15: Add Shell Commands
+
+Shell Code:
+echo "Starting Job1"
+date
+java --version
+echo "Job1 Completed"
+
+---
+
+## STEP 16: Save Job
+
+Click:
+Save
+
+---
+
+## STEP 17: Build Job1
+
+Click:
+Build Now
+
+---
+
+## STEP 18: View Console Output
+
+Click:
+Build Number → Console Output
+
+Expected Output:
+Starting Job1
+Java version
+Current date and time
+Job1 Completed
+
+Finished: SUCCESS
+
+========================================================
+PART 4: CREATE JOB2
+===================
+
+---
+
+## STEP 19: Create Job2
+
+1. Click:
+   New Item
+
+2. Name:
+   Job2
+
+3. Select:
+   Freestyle Project
+
+4. Click:
+   OK
+
+---
+
+## STEP 20: Add Shell Build Step
+
+Click:
+Add Build Step → Execute Shell
+
+Shell Code:
+echo "This is Job2"
+pwd
+ls
+
+---
+
+## STEP 21: Save and Build
+
+Click:
+Save
+
+Then:
+Build Now
+
+========================================================
+PART 5: CREATE JOB3_GIT
+=======================
+
+---
+
+## STEP 22: Create Python Project Locally
+
+Commands:
+mkdir gitproject
+cd gitproject
+
+nano hello.py
+
+Python Code:
+print("Hello from GitHub + Jenkins")
+
+---
+
+## STEP 23: Initialize Git
+
+Commands:
+git init
+git add hello.py
+git commit -m "Initial commit"
+
+---
+
+## STEP 24: Push to GitHub
+
+Commands:
+git remote add origin [https://github.com/USERNAME/REPO.git](https://github.com/USERNAME/REPO.git)
+git push origin master
+
+========================================================
+PART 6: CREATE GIT-BASED JENKINS JOB
+====================================
+
+---
+
+## STEP 25: Create Job3_git
+
+1. Click:
+   New Item
+
+2. Enter:
+   Job3_git
+
+3. Select:
+   Freestyle Project
+
+4. Click:
+   OK
+
+---
+
+## STEP 26: Configure Git Repository
+
+Inside Job3_git:
+
+1. Scroll to:
+   Source Code Management
+
+2. Select:
+   Git
+
+3. Enter Repository URL:
+   [https://github.com/USERNAME/REPO.git](https://github.com/USERNAME/REPO.git)
+
+---
+
+## STEP 27: Configure Build Step
+
+1. Scroll to:
+   Build Steps
+
+2. Click:
+   Add Build Step
+
+3. Select:
+   Execute Shell
+
+Shell Code:
+python3 hello.py
+
+---
+
+## STEP 28: Save and Build
+
+Click:
+Save
+
+Click:
+Build Now
+
+---
+
+## STEP 29: View Console Output
+
+Expected:
+Hello from GitHub + Jenkins
+
+Finished: SUCCESS
+
+========================================================
+PART 7: CREATE SEQUENTIAL PIPELINE
+==================================
+
+AIM:
+Job1 → triggers Job2 → triggers Job3_git
+
+---
+
+## STEP 30: Install Build Pipeline Plugin
+
+Go to:
+Manage Jenkins → Plugins
+
+Search:
+Build Pipeline
+
+Install:
+Build Pipeline Plugin
+
+Restart Jenkins if required.
+
+========================================================
+PART 8: CONFIGURE JOB1 TO TRIGGER JOB2
+======================================
+
+---
+
+## STEP 31: Open Job1 Configuration
+
+Click:
+Job1 → Configure
+
+---
+
+## STEP 32: Add Post Build Action
+
+1. Scroll to:
+   Post-build Actions
+
+2. Click:
+   Add post-build action
+
+3. Select:
+   Build other projects
+
+---
+
+## STEP 33: Enter Downstream Project
+
+Projects to build:
+Job2
+
+Trigger only if build is stable.
+
+Click:
+Save
+
+========================================================
+PART 9: CONFIGURE JOB2 TO TRIGGER JOB3_GIT
+==========================================
+
+---
+
+## STEP 34: Open Job2 Configuration
+
+Click:
+Job2 → Configure
+
+---
+
+## STEP 35: Add Post Build Action
+
+1. Add:
+   Build other projects
+
+2. Project Name:
+   Job3_git
+
+3. Trigger only if build is stable
+
+4. Save
+
+========================================================
+PART 10: EXECUTE PIPELINE
+=========================
+
+---
+
+## STEP 36: Run Job1
+
+Click:
+Job1 → Build Now
+
+What Happens:
+Job1 executes first
+↓
+Job2 automatically starts
+↓
+Job3_git automatically starts
+
+========================================================
+PART 11: VIEW BUILD PIPELINE
+============================
+
+---
+
+## STEP 37: Create Pipeline View
+
+1. From Jenkins Dashboard:
+   Click "+" beside tabs
+
+2. Enter:
+   PipelineView
+
+3. Select:
+   Build Pipeline View
+
+4. Click:
+   OK
+
+---
+
+## STEP 38: Configure Pipeline View
+
+Pipeline Flow:
+Job1
+
+Number of builds:
+5
+
+Click:
+OK
+
+========================================================
+PART 12: VERIFY PIPELINE
+========================
+
+Expected:
+Job1 → Green
+Job2 → Green
+Job3_git → Green
+
+Meaning:
+All jobs executed successfully.
+
+========================================================
+LAB 5: JENKINS SEQUENTIAL JOB SCHEDULING
+========================================
+
+AIM:
+To pass artifacts from one Jenkins job to another.
+
+========================================================
+PART 1: CREATE PYTHON FILE
+==========================
+
+---
+
+## STEP 1: Create hello.py
+
+Commands:
+mkdir sequentiallab
+cd sequentiallab
+
+nano hello.py
+
+Code:
+print("This is artifact data from Jenkins")
+
+========================================================
+PART 2: CREATE UPSTREAM JOB
+===========================
+
+---
+
+## STEP 2: Create newjob
+
+1. Jenkins Dashboard
+2. New Item
+3. Name:
+   newjob
+4. Freestyle Project
+5. OK
+
+========================================================
+PART 3: CONFIGURE BUILD STEP
+============================
+
+---
+
+## STEP 3: Add Execute Shell
+
+Build Step Code:
+python3 hello.py > sample.txt
+
+Explanation:
+Runs Python file
+Stores output into sample.txt
+
+========================================================
+PART 4: ARCHIVE ARTIFACT
+========================
+
+---
+
+## STEP 4: Add Post Build Action
+
+1. Scroll to:
+   Post-build Actions
+
+2. Click:
+   Add post-build action
+
+3. Select:
+   Archive the artifacts
+
+---
+
+## STEP 5: Enter Artifact Name
+
+Artifacts to archive:
+sample.txt
+
+Save Job.
+
+========================================================
+PART 5: BUILD UPSTREAM JOB
+==========================
+
+---
+
+## STEP 6: Build newjob
+
+Click:
+Build Now
+
+---
+
+## STEP 7: Verify Artifact
+
+Open:
+Build Number
+
+You should see:
+sample.txt under Artifacts
+
+========================================================
+PART 6: CREATE DOWNSTREAM JOB
+=============================
+
+---
+
+## STEP 8: Create secondjob
+
+1. New Item
+2. Name:
+   secondjob
+3. Freestyle Project
+4. OK
+
+========================================================
+PART 7: COPY ARTIFACTS
+======================
+
+---
+
+## STEP 9: Install Copy Artifact Plugin
+
+Go to:
+Manage Jenkins → Plugins
+
+Search:
+Copy Artifact
+
+Install plugin.
+
+Restart Jenkins if required.
+
+========================================================
+PART 8: CONFIGURE ARTIFACT COPYING
+==================================
+
+---
+
+## STEP 10: Add Build Step
+
+Inside secondjob:
+
+1. Build Steps
+2. Add Build Step
+3. Select:
+   Copy artifacts from another project
+
+---
+
+## STEP 11: Configure Copy Settings
+
+Project Name:
+newjob
+
+Which Build:
+Latest successful build
+
+Artifacts to copy:
+sample.txt
+
+Target Directory:
+output
+
+========================================================
+PART 9: VERIFY ARTIFACT
+=======================
+
+---
+
+## STEP 12: Add Execute Shell
+
+Add another Build Step:
+Execute Shell
+
+Shell Code:
+cat output/sample.txt
+
+========================================================
+PART 10: LINK JOBS
+==================
+
+---
+
+## STEP 13: Configure newjob Trigger
+
+Open:
+newjob → Configure
+
+Post-build Actions:
+Build other projects
+
+Projects to build:
+secondjob
+
+Save.
+
+========================================================
+PART 11: RUN COMPLETE FLOW
+==========================
+
+---
+
+## STEP 14: Build newjob
+
+Click:
+Build Now
+
+========================================================
+PART 12: VERIFY SUCCESS
+=======================
+
+Expected Flow:
+
+newjob
+↓
+Creates sample.txt
+↓
+Archives sample.txt
+↓
+Triggers secondjob
+↓
+secondjob copies artifact
+↓
+Displays contents using:
+cat output/sample.txt
+
+========================================================
+EXPECTED CONSOLE OUTPUT
+=======================
+
+This is artifact data from Jenkins
+
+Finished: SUCCESS

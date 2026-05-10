@@ -1,0 +1,233 @@
+LAB 1: DOCKER BASICS
+
+AIM:
+To learn Docker image management, container creation, port mapping, and Nginx customization.
+
+STEP 1: Verify Docker Installation
+
+Command:
+docker --version
+
+Purpose:
+Checks whether Docker is installed properly.
+
+STEP 2: View Existing Docker Images
+
+Command:
+docker images
+
+Purpose:
+Displays all Docker images available locally.
+
+STEP 3: Pull Nginx Image
+
+Command:
+sudo docker pull nginx
+
+Purpose:
+Downloads the latest Nginx image from Docker Hub.
+
+STEP 4: Run Nginx Container
+
+Command:
+sudo docker run nginx
+
+Purpose:
+Starts the Nginx container in foreground mode.
+
+STEP 5: Run Nginx in Detached Mode with Port Mapping
+
+Command:
+sudo docker run -d -p 8000:80 nginx
+
+Explanation:
+-d → Runs container in detached mode
+-p 8000:80 → Maps host port 8000 to container port 80
+
+STEP 6: Verify Running Containers
+
+Command:
+docker ps
+
+Purpose:
+Shows currently running containers.
+
+STEP 7: Create Named Container
+
+Command:
+docker run --name Shreyas -p 7000:80 -d nginx
+
+Purpose:
+Creates a container named “Shreyas”.
+
+STEP 8: Enter Container Shell
+
+Command:
+docker exec -it Shreyas bash
+
+Purpose:
+Opens interactive bash terminal inside container.
+
+STEP 9: Navigate to Nginx HTML Directory
+
+Commands:
+cd /usr/share/nginx/html
+ls
+
+Purpose:
+Accesses default Nginx webpage files.
+
+STEP 10: Install Nano Editor Inside Container
+
+Commands:
+apt-get update
+apt-get install nano
+
+Purpose:
+Installs nano editor inside container.
+
+STEP 11: Modify index.html
+
+Command:
+nano index.html
+
+Sample HTML:
+
+<h1>Hi guys !!</h1> <p>My name is Shreyas</p>
+
+Save:
+CTRL + O
+ENTER
+CTRL + X
+
+STEP 12: Verify in Browser
+
+Open:
+http://localhost:7000
+
+Expected Output:
+Customized Nginx webpage.
+
+
+LAB 3: CUSTOM DOCKER IMAGE CREATION
+
+AIM:
+To create and deploy a Flask application using Docker.
+
+STEP 1: Create Project Folder
+
+Commands:
+mkdir pythonproject
+cd pythonproject
+
+STEP 2: Create Required Files
+
+Commands:
+touch app.py
+touch Dockerfile
+mkdir templates
+nano templates/index.html
+
+STEP 3: Install pip
+
+Command:
+sudo apt install python3-pip
+
+STEP 4: Verify pip
+
+Command:
+pip --version
+
+STEP 5: Install Flask
+
+Command:
+pip install flask
+
+STEP 6: Create Flask Application
+
+Command:
+nano app.py
+
+Code:
+from flask import Flask, render_template
+
+app = Flask(name)
+
+@app.route("/")
+def home_page(name=None):
+return render_template("index.html", name=name)
+
+if name == 'main':
+app.run(host='0.0.0.0', port=5000)
+
+STEP 7: Create HTML Page
+
+Command:
+nano templates/index.html
+
+Code:
+
+<!DOCTYPE html> <html> <head> <title>Flask App</title> </head> <body> <h1>Hello from Flask Docker App</h1> </body> </html>
+STEP 8: Create Dockerfile
+
+Command:
+nano Dockerfile
+
+Code:
+FROM python:3.9-alpine
+
+WORKDIR /app
+
+COPY . /app
+
+RUN pip install flask
+
+EXPOSE 5000
+
+CMD ["python", "app.py"]
+
+STEP 9: Run Flask App Locally
+
+Command:
+python3 app.py
+
+Open:
+http://localhost:5000
+
+STEP 10: Build Docker Image
+
+Command:
+sudo docker build -t myimage:1 .
+
+STEP 11: Verify Images
+
+Command:
+sudo docker images
+
+STEP 12: Run Container
+
+Command:
+sudo docker run -p 8000:5000 myimage:1
+
+Open:
+http://localhost:8000
+
+STEP 13: Tag Image
+
+Command:
+sudo docker tag myimage:1 shreyas22/dockerimage
+
+STEP 14: Login to Docker Hub
+
+Command:
+sudo docker login -u shreyas22
+
+STEP 15: Push Image
+
+Command:
+sudo docker push shreyas22/dockerimage
+
+STEP 16: Logout
+
+Command:
+docker logout

@@ -1,0 +1,481 @@
+========================================================
+LAB 8: KUBERNETES COMPLETE STEP-BY-STEP GUIDE
+(BASED ON YOUR DOCX FILES)
+==========================
+
+Source files:  
+
+========================================================
+AIM
+===
+
+To install kubectl and Minikube, start a Kubernetes cluster, create Pods and Deployments, expose services using NodePort, scale deployments, test self-healing, and stop the cluster.
+
+========================================================
+PART 1: INSTALL KUBECTL
+=======================
+
+---
+
+## STEP 1: Update Packages
+
+Command:
+sudo apt update
+
+Purpose:
+Updates package repository information.
+
+---
+
+## STEP 2: Download kubectl
+
+Command:
+curl -LO "[https://dl.k8s.io/release/$(curl](https://dl.k8s.io/release/$%28curl) -L -s [https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl](https://dl.k8s.io/release/stable.txt%29/bin/linux/amd64/kubectl)"
+
+Purpose:
+Downloads latest kubectl binary.
+
+---
+
+## STEP 3: Make kubectl Executable
+
+Command:
+chmod +x kubectl
+
+---
+
+## STEP 4: Move kubectl to System PATH
+
+Command:
+sudo mv kubectl /usr/local/bin/
+
+---
+
+## STEP 5: Verify kubectl Installation
+
+Command:
+kubectl version --client
+
+Expected Output:
+Client Version
+Kustomize Version
+
+========================================================
+PART 2: INSTALL MINIKUBE
+========================
+
+---
+
+## STEP 6: Download Minikube
+
+Command:
+curl -LO [https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64](https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64)
+
+---
+
+## STEP 7: Install Minikube
+
+Command:
+sudo install minikube-linux-amd64 /usr/local/bin/minikube
+
+---
+
+## STEP 8: Verify Minikube Installation
+
+Command:
+minikube version
+
+Expected:
+minikube version: vX.X.X
+
+========================================================
+PART 3: START KUBERNETES CLUSTER
+================================
+
+---
+
+## STEP 9: Add User to Docker Group
+
+Command:
+sudo usermod -aG docker $USER
+
+Purpose:
+Allows Docker usage without sudo.
+
+IMPORTANT:
+Logout and login again after this command.
+
+---
+
+## STEP 10: Start Minikube Cluster
+
+Command:
+minikube start --driver=docker
+
+Purpose:
+Starts Kubernetes single-node cluster using Docker driver.
+
+Expected:
+Starting control plane
+Pulling base image
+Done! kubectl is now configured
+
+========================================================
+PART 4: CHECK CLUSTER STATUS
+============================
+
+---
+
+## STEP 11: Verify Minikube Status
+
+Command:
+minikube status
+
+Expected:
+host: Running
+kubelet: Running
+apiserver: Running
+
+---
+
+## STEP 12: View Cluster Nodes
+
+Command:
+kubectl get nodes
+
+Expected:
+minikube Ready control-plane
+
+========================================================
+PART 5: CREATE POD
+==================
+
+---
+
+## STEP 13: Create Nginx Pod
+
+Command:
+kubectl run my-pod --image=nginx --restart=Never
+
+Purpose:
+Creates a standalone Pod running Nginx.
+
+---
+
+## STEP 14: Verify Pod
+
+Command:
+kubectl get pods
+
+Expected:
+my-pod Running
+
+========================================================
+PART 6: ACCESS POD
+==================
+
+---
+
+## STEP 15: View Pod IP Address
+
+Command:
+kubectl get pod my-pod -o wide
+
+Expected:
+Displays Pod IP.
+
+---
+
+## STEP 16: Access Nginx
+
+Method 1:
+Open browser using Pod IP
+
+Example:
+[http://10.244.0.3](http://10.244.0.3)
+
+OR
+
+Method 2:
+Use curl
+
+Command:
+curl <pod-ip>
+
+Expected:
+Welcome to nginx!
+
+========================================================
+PART 7: EXPOSE POD USING NODEPORT SERVICE
+=========================================
+
+---
+
+## STEP 17: Expose Pod
+
+Command:
+kubectl expose pod my-pod --type=NodePort --port=80 --name=my-service
+
+Purpose:
+Creates a NodePort service for external access.
+
+---
+
+## STEP 18: Verify Services
+
+Command:
+kubectl get services
+
+Expected:
+my-service NodePort
+
+========================================================
+PART 8: ACCESS SERVICE
+======================
+
+---
+
+## STEP 19: Get Service URL
+
+Command:
+minikube service my-service --url
+
+Expected:
+[http://192.xxx.xxx.xxx:31xxx](http://192.xxx.xxx.xxx:31xxx)
+
+---
+
+## STEP 20: Open Service URL
+
+Open URL in browser.
+
+Expected Output:
+Welcome to nginx!
+
+========================================================
+PART 9: DELETE POD AND SERVICE
+==============================
+
+---
+
+## STEP 21: Delete Service
+
+Command:
+kubectl delete service my-service
+
+---
+
+## STEP 22: Delete Pod
+
+Command:
+kubectl delete pod my-pod
+
+========================================================
+PART 10: CREATE DEPLOYMENT
+==========================
+
+---
+
+## STEP 23: Create Deployment with 2 Replicas
+
+Command:
+kubectl create deployment my-deployment --image=nginx --replicas=2
+
+Purpose:
+Creates deployment managing 2 Pods.
+
+---
+
+## STEP 24: Verify Pods
+
+Command:
+kubectl get pods
+
+Expected:
+2 Running Pods
+
+---
+
+## STEP 25: Verify Deployment
+
+Command:
+kubectl get deployment
+
+Expected:
+READY 2/2
+
+========================================================
+PART 11: EXPOSE DEPLOYMENT
+==========================
+
+---
+
+## STEP 26: Expose Deployment
+
+Command:
+kubectl expose deployment my-deployment --type=NodePort --port=80
+
+---
+
+## STEP 27: Open Deployment Service
+
+Command:
+minikube service my-deployment
+
+OR
+
+Command:
+minikube service my-deployment --url
+
+Open generated URL in browser.
+
+Expected:
+Welcome to nginx!
+
+========================================================
+PART 12: SCALE DEPLOYMENT
+=========================
+
+---
+
+## STEP 28: Scale Deployment to 5 Replicas
+
+Command:
+kubectl scale deployment my-deployment --replicas=5
+
+Purpose:
+Increases number of Pods.
+
+---
+
+## STEP 29: Verify Scaling
+
+Command:
+kubectl get pods
+
+Expected:
+5 Pods Running
+
+========================================================
+PART 13: DELETE POD (SELF-HEALING)
+==================================
+
+---
+
+## STEP 30: View Pods
+
+Command:
+kubectl get pods
+
+---
+
+## STEP 31: Delete One Pod
+
+Command:
+kubectl delete pod <pod-name>
+
+Example:
+kubectl delete pod my-deployment-5f8fc99b79-stpl4
+
+Purpose:
+Demonstrates Kubernetes self-healing.
+
+---
+
+## STEP 32: Verify Pods Again
+
+Command:
+kubectl get pods
+
+Expected:
+Deleted Pod recreated automatically.
+
+Explanation:
+Deployment controller creates new Pod to maintain desired replica count.
+
+========================================================
+PART 14: DELETE DEPLOYMENT
+==========================
+
+---
+
+## STEP 33: Delete Deployment
+
+Command:
+kubectl delete deployment my-deployment
+
+---
+
+## STEP 34: Verify Pods
+
+Command:
+kubectl get pods
+
+Expected:
+No Pods running.
+
+========================================================
+PART 15: STOP MINIKUBE
+======================
+
+---
+
+## STEP 35: Stop Cluster
+
+Command:
+minikube stop
+
+Expected:
+Stopping node "minikube"
+
+========================================================
+IMPORTANT KUBERNETES COMMANDS SUMMARY
+=====================================
+
+Check Nodes:
+kubectl get nodes
+
+Check Pods:
+kubectl get pods
+
+Detailed Pod Info:
+kubectl get pod -o wide
+
+Create Pod:
+kubectl run my-pod --image=nginx --restart=Never
+
+Delete Pod:
+kubectl delete pod my-pod
+
+Create Deployment:
+kubectl create deployment my-deployment --image=nginx --replicas=2
+
+Scale Deployment:
+kubectl scale deployment my-deployment --replicas=5
+
+Check Deployment:
+kubectl get deployment
+
+Expose Pod:
+kubectl expose pod my-pod --type=NodePort --port=80 --name=my-service
+
+Expose Deployment:
+kubectl expose deployment my-deployment --type=NodePort --port=80
+
+View Services:
+kubectl get services
+
+Get Service URL:
+minikube service my-service --url
+
+Delete Service:
+kubectl delete service my-service
+
+Delete Deployment:
+kubectl delete deployment my-deployment
+
+Start Minikube:
+minikube start --driver=docker
+
+Stop Minikube:
+minikube stop
