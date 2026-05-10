@@ -725,3 +725,96 @@ EXPECTED CONSOLE OUTPUT
 This is artifact data from Jenkins
 
 Finished: SUCCESS
+
+
+
+
+
+
+
+Step 1: Install the "Build Pipeline" Plugin
+Before creating jobs, you need the tool that visualizes them.
+
+On the Jenkins home page, click Manage Jenkins in the left sidebar.
+
+Click on Plugins.
+
+Go to the Available plugins tab.
+
+Search for Build Pipeline.
+
+Check the box and click Install without restart (or Download now and install after restart).
+
+Once finished, click the Go back to the top page link.
+
+Step 2: Create "Job 1" (The Git Integration Job)
+This job will pull your code from GitHub.
+
+Click New Item on the dashboard.
+
+Enter name: Job1_Fetch_Git and select Freestyle project. Click OK.
+
+Source Code Management: Select Git.
+
+Repository URL: Paste your GitHub/GitLab project URL. (Ensure your Jenkins server has access or credentials if it's a private repo).
+
+Build Triggers (Optional): You can check "Poll SCM" and enter * * * * * if you want it to check for code changes every minute.
+
+Click Save.
+
+Step 3: Create "Job 2" (The Downstream Job)
+This job represents the next stage (e.g., Testing or Deployment) and will trigger automatically after Job 1.
+
+Go back to the Dashboard and click New Item.
+
+Enter name: Job2_Process and select Freestyle project. Click OK.
+
+Scroll down to Build Triggers.
+
+Check the box Build after other projects are built.
+
+In Projects to watch, type Job1_Fetch_Git.
+
+Scroll down to Build Steps, click Add build step, and select Execute shell.
+
+Type a simple command like: echo "Processing code from Git... Done."
+
+Click Save.
+
+Step 4: Link the Jobs (The "Upstream" Connection)
+While Step 3 links them, it is best practice to ensure the connection is visible in the pipeline view by setting the "Post-build Action" in the first job.
+
+Go to Job1_Fetch_Git -> Configure.
+
+Scroll to the very bottom to Post-build Actions.
+
+Click Add post-build action -> Build other projects.
+
+In Project to build, type Job2_Process.
+
+Click Save.
+
+Step 5: Create the Pipeline View
+Now you will create the visual dashboard to see these jobs move from one to the other.
+
+On the Jenkins Dashboard, look for the + (plus) icon next to the "All" tab.
+
+View name: Enter My_Git_Pipeline.
+
+Select Build Pipeline View and click Create.
+
+In the configuration page that opens:
+
+Layout Settings: Find Select Initial Job.
+
+Choose Job1_Fetch_Git from the dropdown.
+
+Click OK at the bottom.
+
+Step 6: Run the Pipeline
+You will now see a screen with a "Run" button on the first green/grey box.
+
+Click Run.
+
+You will see Job1_Fetch_Git start. Once it turns Green (Success), you will see Job2_Process automatically trigger and turn green as well.
+
